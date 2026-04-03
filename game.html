@@ -252,13 +252,11 @@ const game = document.getElementById("game");
 function renderQuestion() {
   const q = questions[index];
   game.innerHTML = `
-    <div class="progress">題目 ${index + 1} / ${questions.length}</div>
-    ${q.image}
-    ${q.options.map((opt, i) =>
-      `<button onclick="answer(${i})">${opt}</button>`
-    ).join("")}
-  `;
-}
+  <img src="${q.image}">
+  ${q.options.map((opt, i) =>
+    `<button onclick="answer(${i})">${opt}</button>`
+  ).join("")}
+`;
 
 function answer(choice) {
   const q = questions[index];
