@@ -1,3 +1,4 @@
+困難版有 10題，幫我加回餘下 5 題
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
@@ -194,66 +195,36 @@ const QUESTIONS = {
   ],
 
   /* ✅ 困難版 */
- hard: [
-  {
-    image: "images/分手總要在雨天.jpeg",
-    options: ["分手總要在雨天", "還是覺得你最好", "我哭了"],
-    answer: 0,
-    lyric: "你說要走的一晚\n連綿夜雨 也似這天"
-  },
-  {
-    image: "images/太陽星辰.jpg",
-    options: ["地球人", "愛是永恆", "太陽星辰"],
-    answer: 2,
-    lyric: "人於高速都市閃身過 沒看見他人\n難得當中的妳關心我 夢與我追尋"
-  },
-  {
-    image: "images/月半彎.png",
-    options: ["月半彎", "夕陽醉了", "暗戀你"],
-    answer: 0,
-    lyric: "月半彎 倚於深宵 晚風輕飄\n一張俏臉泛著半點的醉意"
-  },
-  {
-    image: "images/地球人.png",
-    options: ["留住這時光", "Life Is Like A Dream", "地球人"],
-    answer: 2,
-    lyric: "這是東京紐約巴黎 我願穿梭千里路軌\n我像個天真小孩 滿面帶著熱情回歸"
-  },
-  {
-    image: "images/好久不見.jpg",
-    options: ["好久不見", "明日約定", "心如刀割"],
-    answer: 0,
-    lyric: "我希望是一片雲朵 飄到你的天空\n安安靜靜的望著你是否快樂\n只能這樣了 不打擾 你平靜生活"
-  },
-  {
-    image: "images/我應該.jpg",
-    options: ["我應該", "和好不如初", "我哭了"],
-    answer: 0,
-    lyric: "常痛哭躲在門外 誰人共你正在內 傳來聲聲喝采"
-  },
-  {
-    image: "images/和好不如初.jpg",
-    options: ["屈到病", "和好不如初", "玩不起"],
-    answer: 1,
-    lyric: "和好 不再如初\n即使修理以後瘡疤太多\n一世要扮失憶症麼"
-  },
-  {
-    image: "images/野貓之戀.jpeg",
-    options: ["屈到病", "這麼近（那麼遠）", "野貓之戀"],
-    answer: 2,
-    lyric: "夜深中嬉戲 野貓一生\n美麗偏偏不羈\n鐵一般漢子 憤怒卻帶痛悲\n鏡裏我共妳 似裂碎玻璃"
-  },
-  {
-    image: "images/想劈酒.png",
-    options: ["想劈酒", "釋放自己", "似醉還未醉"],
-    answer: 0,
-    lyric: "今朝有酒 今朝飲飽飲夠\n開心懶管 誰無厘頭\n他朝有憂 他朝終可解救\n只想劈酒 無求無愁"
-  },
-  {
-    image: "images/離人.png",
-    options: ["離人", "枕邊月亮", "流星下的願"],
-    answer: 0,
-    lyric: "銀色小船搖搖晃晃彎彎\n有人說 一次告別天上就會有顆星又熄滅"
+  hard: [
+    {
+      image: "images/分手總要在雨天.jpeg",
+      options: ["分手總要在雨天", "還是覺得你最好", "我哭了"],
+      answer: 0,
+      lyric: "你說要走的一晚\n連綿夜雨 也似這天"
+    },
+    {
+      image: "images/太陽星辰.jpg",
+      options: ["地球人", "愛是永恆", "太陽星辰"],
+      answer: 2,
+      lyric: "人於高速都市閃身過 沒看見他人\n難得當中的妳關心我 夢與我追尋"
+    },
+    {
+      image: "images/月半彎.png",
+      options: ["月半彎", "夕陽醉了", "暗戀你"],
+      answer: 0,
+      lyric: "月半彎 倚於深宵 晚風輕飄\n一張俏臉泛著半點的醉意"
+    },
+    {
+      image: "images/好久不見.jpg",
+      options: ["好久不見", "明日約定", "心如刀割"],
+      answer: 0,
+      lyric: "我希望是一片雲朵 飄到你的天空\n安安靜靜的望著你是否快樂\n只能這樣了 不打擾 你平靜生活"
+    },
+    {
+      image: "images/離人.png",
+      options: ["離人", "枕邊月亮", "流星下的願"],
+      answer: 0,
+      lyric: "銀色小船搖搖晃晃彎彎\n有人說 一次告別天上就會有顆星又熄滅"
     }
   ]
 };
@@ -266,17 +237,13 @@ const params = new URLSearchParams(location.search);
 const difficulty = params.get("difficulty") || "easy";
 
 const pool = QUESTIONS[difficulty];
+const total = 10;
 
-// 洗牌
+// ✅ 洗牌
 const shuffled = [...pool].sort(() => Math.random() - 0.5);
 
-// 出題規則
-let questions;
-if (difficulty === "easy") {
-  questions = shuffled.slice(0, 10); // 15 抽 10
-} else {
-  questions = shuffled; // 困難 10 題全出
-}
+// ✅ 簡單：15 抽 10｜困難：不足 10 則全出
+const questions = shuffled.slice(0, Math.min(total, shuffled.length));
 
 let index = 0;
 let score = 0;
@@ -287,7 +254,8 @@ function renderQuestion() {
   const q = questions[index];
   game.innerHTML = `
     <div class="progress">題目 ${index + 1} / ${questions.length}</div>
-    <img src="${q.imageoptions.map((opt, i) =>
+    <img src="${q.image}">
+    ${q.options.map((opt, i) =>
       `<button onclick="answer(${i})">${opt}</button>`
     ).join("")}
   `;
@@ -318,7 +286,7 @@ function next() {
       <h2>🎉 遊戲完成</h2>
       <p>✅ 正確題數：${score} / ${questions.length}</p>
       <p>⏱️ 所需時間：${time} 秒</p>
-      index.html返回首頁</a>
+      <a href="index.html">返回首頁</a>
     `;
   }
 }
