@@ -273,9 +273,9 @@ const shuffled = [...pool].sort(() => Math.random() - 0.5);
 // 出題規則
 let questions;
 if (difficulty === "easy") {
-  questions = shuffled.slice(0, 10);
+  questions = shuffled.slice(0, 10); // 15 抽 10
 } else {
-  questions = shuffled;
+  questions = shuffled; // 困難 10 題全出
 }
 
 let index = 0;
@@ -287,21 +287,24 @@ function renderQuestion() {
   const q = questions[index];
   game.innerHTML = `
     <div class="progress">題目 ${index + 1} / ${questions.length}</div>
-    <img src="${q.image}">
-    ${q.options.map((opt, i) =>
+    <img src="${q.imageoptions.map((opt, i) =>
       `<button onclick="answer(${i})">${opt}</button>`
     ).join("")}
   `;
 }
 
-function renderQuestion() {
+function answer(choice) {
   const q = questions[index];
+  const correct = choice === q.answer;
+  if (correct) score++;
+
   game.innerHTML = `
-    <div class="progress">題目 ${index + 1} / ${questions.length}</div>
-    <img src="${q.image}">
-    ${q.options.map((opt, i) =>
-      `<button onclick="answer(${i})">${opt}</button>`
-    ).join("")}
+    <div class="${correct ? 'correct' : 'wrong'}">
+      ${correct ? '✅ 答對了！' : '❌ 答錯了'}
+    </div>
+    <p>正確答案：${q.options[q.answer]}</p>
+    <div class="lyric">${q.lyric}</div>
+    <button onclick="next()">下一題</button>
   `;
 }
 
@@ -315,7 +318,7 @@ function next() {
       <h2>🎉 遊戲完成</h2>
       <p>✅ 正確題數：${score} / ${questions.length}</p>
       <p>⏱️ 所需時間：${time} 秒</p>
-      <a href="index.html">返回首頁</a>
+      index.html返回首頁</a>
     `;
   }
 }
