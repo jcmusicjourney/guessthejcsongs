@@ -266,13 +266,17 @@ const params = new URLSearchParams(location.search);
 const difficulty = params.get("difficulty") || "easy";
 
 const pool = QUESTIONS[difficulty];
-const total = 10;
 
-// ✅ 洗牌
+// 洗牌
 const shuffled = [...pool].sort(() => Math.random() - 0.5);
 
-// ✅ 簡單：15 抽 10｜困難：不足 10 則全出
-const questions = shuffled.slice(0, Math.min(total, shuffled.length));
+// 出題規則
+let questions;
+if (difficulty === "easy") {
+  questions = shuffled.slice(0, 10);
+} else {
+  questions = shuffled;
+}
 
 let index = 0;
 let score = 0;
