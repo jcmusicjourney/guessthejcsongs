@@ -9,76 +9,64 @@
 
 <style>
 :root {
-  --primary: #4a6fa5;
-  --primary-dark: #395d89;
-  --bg: linear-gradient(135deg, #f8f9fa, #e3f2fd);
+  --primary:#4a6fa5;
+  --primary-dark:#395d89;
+  --bg:linear-gradient(135deg,#f8f9fa,#e3f2fd);
 }
-body {
-  font-family: 'Noto Sans TC', sans-serif;
-  background: var(--bg);
-  margin: 0;
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--bg);
+  margin:0;
 }
-header {
-  background: linear-gradient(to right, #4a6fa5, #6e9cd2);
-  color: #fff;
-  text-align: center;
-  padding: 20px;
+header{
+  background:linear-gradient(to right,#4a6fa5,#6e9cd2);
+  color:#fff;
+  text-align:center;
+  padding:20px;
 }
-header h1 {
-  margin: 0;
-  font-size: 1.6rem;
+.container{
+  max-width:480px;
+  margin:20px auto;
+  padding:20px;
 }
-.container {
-  max-width: 480px;
-  margin: 20px auto;
-  padding: 20px;
+.card{
+  background:#fff;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 10px 28px rgba(0,0,0,.12);
+  text-align:center;
 }
-.card {
-  background: #fff;
-  border-radius: 18px;
-  padding: 20px;
-  box-shadow: 0 10px 28px rgba(0,0,0,.12);
-  text-align: center;
+.progress{
+  font-size:.9rem;
+  color:#666;
+  margin-bottom:12px;
 }
-.progress {
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 12px;
+img{
+  width:100%;
+  border-radius:14px;
+  margin-bottom:14px;
 }
-img {
-  width: 100%;
-  border-radius: 14px;
-  margin-bottom: 14px;
+button{
+  width:100%;
+  padding:16px;
+  margin:10px 0;
+  font-size:1.05rem;
+  border:none;
+  border-radius:12px;
+  background:var(--primary);
+  color:#fff;
+  cursor:pointer;
 }
-button {
-  width: 100%;
-  padding: 16px;
-  margin: 10px 0;
-  font-size: 1.05rem;
-  border: none;
-  border-radius: 12px;
-  background: var(--primary);
-  color: #fff;
-  cursor: pointer;
-}
-button:hover {
-  background: var(--primary-dark);
-}
-.correct {
-  color: #198754;
-  font-weight: 600;
-}
-.wrong {
-  color: #dc3545;
-  font-weight: 600;
-}
-.lyric {
-  margin-top: 12px;
-  background: #f5f7fb;
-  padding: 14px;
-  border-radius: 12px;
-  font-style: italic;
-  white-space: pre-line;
+button:hover{background:var(--primary-dark)}
+.correct{color:#198754;font-weight:600}
+.wrong{color:#dc3545;font-weight:600}
+.lyric{
+  margin-top:12px;
+  background:#f5f7fb;
+  padding:14px;
+  border-radius:12px;
+  font-style:italic;
+  white-space:pre-line;
 }
 </style>
 </head>
@@ -94,46 +82,42 @@ button:hover {
 </div>
 
 <script>
-/* =========================
-   題庫（已固定，不隨機）
-   ========================= */
+/* ========= 題庫 ========= */
 
 const QUESTIONS = {
   easy: [
-    { image: "images/交叉算了.jpg", options: ["馬路英雄","交叉算了","日出時讓戀愛終結"], answer: 1, lyric: "踏上的士\n垂頭玩弄大鼻子" },
-    { image: "images/她來聽我的演唱會.jpg", options: ["在你身邊","留給自己一個晚上","她來聽我的演唱會"], answer: 2, lyric: "她來聽我的演唱會\n在四十歲後聽歌的女人很美\n小孩在問她為什麼流淚\n身邊的男人早已漸漸入睡\n她靜靜聽著我們的演唱會" },
-    { image: "images/有個人.jpg", options: ["愛是永恆","有個人","真情流露"], answer: 1, lyric: "同行共領會人世道理\n假使一天不再飛\n到公園中散步年紀\n有老伴仍是你" },
-    { image: "images/有病呻吟.jpg", options: ["有病呻吟","樓上來的聲音","等你等到我心痛"], answer: 0, lyric: "如果失戀註定逃不過\n逃到病床前 才明白更多\n和你分手都也捱得過\n然而這夜為何\n無能力退燒 多麼錯" },
-    { image: "images/吻別.png", options: ["心碎了無痕","明日約定","吻別"], answer: 2, lyric: "我和你吻別 在無人的街\n讓風痴笑我不能拒絕\n我和你吻別 在狂亂的夜\n我的心 等著迎接傷悲" },
-    { image: "images/壯志驕陽.png", options: ["壯志驕陽","太陽星辰","每天愛你多一些"], answer: 0, lyric: "飛機將降落了 全沒法掩飾的笑\n我手中你贈的錶 提我愛惜一分一秒" },
-    { image: "images/我等到花兒也謝了.png", options: ["我等到花兒也謝了","秋意濃","一千個傷心的理由"], answer: 0, lyric: "你知不知道 你知不知道\n我等到花兒也謝了" },
-    { image: "images/李香蘭.jpg", options: ["怎麼捨得你","李香蘭","忘情冷雨夜"], answer: 1, lyric: "說不出 借酒相送\n夜雨凍 雨點透射到照片中\n回頭似是夢 無法彈動\n迷住凝望你 褪色照片中" },
-    { image: "images/沒有童話時.jpg", options: ["Life Is Like A Dream","讓奇妙飛翔","沒有童話時"], answer: 2, lyric: "從前信 天空月亮\n裝起嫦娥 飛天巫婆 穿梭銀河\n從前信 仙境夢地\n仙子騰雲 小子屠龍 魔杖神奇" },
-    { image: "images/馬路英雄.png", options: ["這一次意外","燥狂","馬路英雄"], answer: 2, lyric: "世界似後退 道別流浪身軀\n世界被我撞碎 道別遺憾一堆" },
-    { image: "images/望月.png", options: ["望月","餓狼傳說","愛狼說"], answer: 0, lyric: "狼在叫 雪正飄 月似鏡子天上照" },
-    { image: "images/樓上來的聲音.jpg", options: ["有病呻吟","寂寞的男人","樓上來的聲音"], answer: 2, lyric: "靜處在家中竟有壓力\n就似擔心失去價值\n寧願日日夜夜大聲播 情歌\n真不真實也好過" },
-    { image: "images/頭髮亂了.jpg", options: ["和好不如初","頭髮亂了","生命的插曲"], answer: 1, lyric: "請揭曉 你做錯事了 讓你秀髮亂了\n應對亂了 太過份了 衫鈕都扣錯了" },
-    { image: "images/藍雨.png", options: ["藍雨","別戀","春風秋雨"], answer: 0, lyric: "灰灰的天 空空的街 千串細雨點\n用斜紋交織出一張冰冷面\n微涼的風中 街中一把遭棄置的破傘\n像說怎麼過這一天" },
-    { image: "images/Double Trouble.jpg", options: ["這一次意外","Double Trouble","勇敢的故事"], answer: 1, lyric: "想歸家去洗血跡 搖搖撞撞腳下無力\n捱到了正打開家門 暗暗看到背後\n那個殺手正回來明明是滅口" }
+    {image:"images/交叉算了.jpg",options:["馬路英雄","交叉算了","日出時讓戀愛終結"],answer:1,lyric:"踏上的士\n垂頭玩弄大鼻子"},
+    {image:"images/她來聽我的演唱會.jpg",options:["在你身邊","留給自己一個晚上","她來聽我的演唱會"],answer:2,lyric:"她來聽我的演唱會\n在四十歲後聽歌的女人很美\n小孩在問她為什麼流淚\n身邊的男人早已漸漸入睡\n她靜靜聽著我們的演唱會"},
+    {image:"images/有個人.jpg",options:["愛是永恆","有個人","真情流露"],answer:1,lyric:"同行共領會人世道理\n假使一天不再飛\n到公園中散步年紀\n有老伴仍是你"},
+    {image:"images/有病呻吟.jpg",options:["有病呻吟","樓上來的聲音","等你等到我心痛"],answer:0,lyric:"如果失戀註定逃不過\n逃到病床前 才明白更多\n和你分手都也捱得過\n然而這夜為何\n無能力退燒 多麼錯"},
+    {image:"images/吻別.png",options:["心碎了無痕","明日約定","吻別"],answer:2,lyric:"我和你吻別 在無人的街\n讓風痴笑我不能拒絕\n我和你吻別 在狂亂的夜\n我的心 等著迎接傷悲"},
+    {image:"images/壯志驕陽.png",options:["壯志驕陽","太陽星辰","每天愛你多一些"],answer:0,lyric:"飛機將降落了 全沒法掩飾的笑\n我手中你贈的錶 提我愛惜一分一秒"},
+    {image:"images/我等到花兒也謝了.png",options:["我等到花兒也謝了","秋意濃","一千個傷心的理由"],answer:0,lyric:"你知不知道 你知不知道\n我等到花兒也謝了"},
+    {image:"images/李香蘭.jpg",options:["怎麼捨得你","李香蘭","忘情冷雨夜"],answer:1,lyric:"說不出 借酒相送\n夜雨凍 雨點透射到照片中\n回頭似是夢 無法彈動\n迷住凝望你 褪色照片中"},
+    {image:"images/沒有童話時.jpg",options:["Life Is Like A Dream","讓奇妙飛翔","沒有童話時"],answer:2,lyric:"從前信 天空月亮\n裝起嫦娥 飛天巫婆 穿梭銀河\n從前信 仙境夢地\n仙子騰雲 小子屠龍 魔杖神奇"},
+    {image:"images/馬路英雄.png",options:["這一次意外","燥狂","馬路英雄"],answer:2,lyric:"世界似後退 道別流浪身軀\n世界被我撞碎 道別遺憾一堆"},
+    {image:"images/望月.png",options:["望月","餓狼傳說","愛狼說"],answer:0,lyric:"狼在叫 雪正飄 月似鏡子天上照"},
+    {image:"images/樓上來的聲音.jpg",options:["有病呻吟","寂寞的男人","樓上來的聲音"],answer:2,lyric:"靜處在家中竟有壓力\n就似擔心失去價值\n寧願日日夜夜大聲播 情歌\n真不真實也好過"},
+    {image:"images/頭髮亂了.jpg",options:["和好不如初","頭髮亂了","生命的插曲"],answer:1,lyric:"請揭曉 你做錯事了 讓你秀髮亂了\n應對亂了 太過份了 衫鈕都扣錯了"},
+    {image:"images/藍雨.png",options:["藍雨","別戀","春風秋雨"],answer:0,lyric:"灰灰的天 空空的街 千串細雨點\n用斜紋交織出一張冰冷面\n微涼的風中 街中一把遭棄置的破傘\n像說怎麼過這一天"},
+    {image:"images/Double Trouble.jpg",options:["這一次意外","Double Trouble","勇敢的故事"],answer:1,lyric:"想歸家去洗血跡 搖搖撞撞腳下無力\n捱到了正打開家門 暗暗看到背後\n那個殺手正回來明明是滅口"}
   ],
 
   hard: [
-    { image: "images/分手總要在雨天.jpeg", options: ["分手總要在雨天","還是覺得你最好","我哭了"], answer: 0, lyric: "你說要走的一晚\n連綿夜雨 也似這天" },
-    { image: "images/太陽星辰.jpg", options: ["地球人","愛是永恆","太陽星辰"], answer: 2, lyric: "人於高速都市閃身過 沒看見他人\n難得當中的妳關心我 夢與我追尋" },
-    { image: "images/月半彎.png", options: ["月半彎","夕陽醉了","暗戀你"], answer: 0, lyric: "月半彎 倚於深宵 晚風輕飄\n一張俏臉泛著半點的醉意" },
-    { image: "images/地球人.png", options: ["留住這時光","Life Is Like A Dream","地球人"], answer: 2, lyric: "這是東京紐約巴黎 我願穿梭千里路軌\n我像個天真小孩 滿面帶著熱情回歸" },
-    { image: "images/好久不見.jpg", options: ["好久不見","明日約定","心如刀割"], answer: 0, lyric: "我希望是一片雲朵 飄到你的天空\n安安靜靜的望著你是否快樂\n只能這樣了 不打擾 你平靜生活" },
-    { image: "images/我應該.jpg", options: ["我應該","和好不如初","我哭了"], answer: 0, lyric: "常痛哭躲在門外 誰人共你正在內 傳來聲聲喝采" },
-    { image: "images/和好不如初.jpg", options: ["屈到病","和好不如初","玩不起"], answer: 1, lyric: "和好 不再如初\n即使修理以後瘡疤太多\n一世要扮失憶症麼" },
-    { image: "images/野貓之戀.jpeg", options: ["屈到病","這麼近（那麼遠）","野貓之戀"], answer: 2, lyric: "夜深中嬉戲 野貓一生\n美麗偏偏不羈\n鐵一般漢子 憤怒卻帶痛悲\n鏡裏我共妳 似裂碎玻璃" },
-    { image: "images/想劈酒.png", options: ["想劈酒","釋放自己","似醉還未醉"], answer: 0, lyric: "今朝有酒 今朝飲飽飲夠\n開心懶管 誰無厘頭\n他朝有憂 他朝終可解救\n只想劈酒 無求無愁" },
-    { image: "images/離人.png", options: ["離人","枕邊月亮","流星下的願"], answer: 0, lyric: "銀色小船搖搖晃晃彎彎\n有人說 一次告別天上就會有顆星又熄滅" }
+    {image:"images/分手總要在雨天.jpeg",options:["分手總要在雨天","還是覺得你最好","我哭了"],answer:0,lyric:"你說要走的一晚\n連綿夜雨 也似這天"},
+    {image:"images/太陽星辰.jpg",options:["地球人","愛是永恆","太陽星辰"],answer:2,lyric:"人於高速都市閃身過 沒看見他人\n難得當中的妳關心我 夢與我追尋"},
+    {image:"images/月半彎.png",options:["月半彎","夕陽醉了","暗戀你"],answer:0,lyric:"月半彎 倚於深宵 晚風輕飄\n一張俏臉泛著半點的醉意"},
+    {image:"images/地球人.png",options:["留住這時光","Life Is Like A Dream","地球人"],answer:2,lyric:"這是東京紐約巴黎 我願穿梭千里路軌\n我像個天真小孩 滿面帶著熱情回歸"},
+    {image:"images/好久不見.jpg",options:["好久不見","明日約定","心如刀割"],answer:0,lyric:"我希望是一片雲朵 飄到你的天空\n安安靜靜的望著你是否快樂\n只能這樣了 不打擾 你平靜生活"},
+    {image:"images/我應該.jpg",options:["我應該","和好不如初","我哭了"],answer:0,lyric:"常痛哭躲在門外 誰人共你正在內 傳來聲聲喝采"},
+    {image:"images/和好不如初.jpg",options:["屈到病","和好不如初","玩不起"],answer:1,lyric:"和好 不再如初\n即使修理以後瘡疤太多\n一世要扮失憶症麼"},
+    {image:"images/野貓之戀.jpeg",options:["屈到病","這麼近（那麼遠）","野貓之戀"],answer:2,lyric:"夜深中嬉戲 野貓一生\n美麗偏偏不羈\n鐵一般漢子 憤怒卻帶痛悲\n鏡裏我共妳 似裂碎玻璃"},
+    {image:"images/想劈酒.png",options:["想劈酒","釋放自己","似醉還未醉"],answer:0,lyric:"今朝有酒 今朝飲飽飲夠\n開心懶管 誰無厘頭\n他朝有憂 他朝終可解救\n只想劈酒 無求無愁"},
+    {image:"images/離人.png",options:["離人","枕邊月亮","流星下的願"],answer:0,lyric:"銀色小船搖搖晃晃彎彎\n有人說 一次告別天上就會有顆星又熄滅"}
   ]
 };
 
-/* =========================
-   遊戲流程（穩定版）
-   ========================= */
+/* ========= 遊戲流程 ========= */
 
 const params = new URLSearchParams(location.search);
 const difficulty = params.get("difficulty") || "easy";
@@ -147,21 +131,17 @@ const game = document.getElementById("game");
 function renderQuestion() {
   const q = questions[index];
   game.innerHTML = `
-    <div class="progress">題目 ${index + 1} / ${questions.length}</div>
-map((opt, i) =>
-      `<button onclick="answer(${i})">${opt}</button>`
-    ).join("")}
+    <div class="progress">題目 ${index+1} / ${questions.length}</div>
+    <img src="${qon onclick="answer(${i})">${o}</button>`).join("")}
   `;
 }
 
-function answer(choice) {
+function answer(choice){
   const q = questions[index];
-  const correct = choice === q.answer;
-  if (correct) score++;
-
-  game.innerHTML = `
-    <div class="${correct ? 'correct' : 'wrong'}">
-      ${correct ? '✅ 答對了！' : '❌ 答錯了'}
+  if(choice===q.answer) score++;
+  game.innerHTML=`
+    <div class="${choice===q.answer?'correct':'wrong'}">
+      ${choice===q.answer?'✅ 答對了！':'❌ 答錯了'}
     </div>
     <p>正確答案：${q.options[q.answer]}</p>
     <div class="lyric">${q.lyric}</div>
@@ -169,17 +149,17 @@ function answer(choice) {
   `;
 }
 
-function next() {
+function next(){
   index++;
-  if (index < questions.length) {
+  if(index<questions.length){
     renderQuestion();
-  } else {
-    const time = Math.floor((Date.now() - startTime) / 1000);
-    game.innerHTML = `
+  }else{
+    const t=Math.floor((Date.now()-startTime)/1000);
+    game.innerHTML=`
       <h2>🎉 遊戲完成</h2>
       <p>✅ 正確題數：${score} / ${questions.length}</p>
-      <p>⏱️ 所需時間：${time} 秒</p>
-      <a href="l返回首頁</a>
+      <p>⏱️ 所需時間：${t} 秒</p>
+      <ndex.html返回首頁</a>
     `;
   }
 }
