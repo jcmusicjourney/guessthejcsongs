@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>看圖估歌</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+<style>
+body {font-family:'Noto Sans TC',sans-serif;background:linear-gradient(135deg,#f8f9fa,#e3f2fd);margin:0}
+header {background:linear-gradient(to right,#4a6fa5,#6e9cd2);color:#fff;text-align:center;padding:20px}
+.container{max-width:480px;margin:auto;padding:20px;text-align:center}
+img{max-width:100%;border-radius:12px}
+button{width:100%;padding:16px;margin:12px 0;font-size:1.1rem;border:none;border-radius:8px;background:#4a6fa5;color:#fff}
+@media(max-width:600px){header h1{font-size:1.4rem}.container{padding:16px}}
+.correct{color:#198754;font-weight:bold}.wrong{color:#dc3545;font-weight:bold}
+.lyric{background:#fff;padding:10px;border-radius:8px;font-style:italic}
+</style>
+</head>
+<body>
+<header><h1>🎵 看圖估歌</h1></header>
+<div class="container" id="game"></div>
+<script src="questions.js"></script>
+<script>
+const p=new URLSearchParams(location.search);
+const d=p.get('difficulty')||'easy';
+const qs=[...QUESTIONS[d]].sort(()=>Math.random()-0.5).slice(0,10);
+let i=0,s=0,t0=Date.now();
+const g=document.getElementById('game');
+function render(){const q=qs[i];g.innerHTML=`<img src="${q.image}">`+q.options.map((o,j)=>`<button onclick=ans(${j})>${o}</button>`).join('');}
+function ans(c){const q=qs[i];if(c===q.answer)s++;g.innerHTML=`<p class="${c===q.answer?'correct':'wrong'}">${c===q.answer?'✅ 正確':'❌ 錯誤'}</p><p>正確答案：${q.options[q.answer]}</p><div class="lyric">${q.lyric}</div><button onclick=next()>下一題</button>`;}
+function next(){i++;i<qs.length?render():end();}
+function end(){const t=Math.floor((Date.now()-t0)/1000);g.innerHTML=`<h2>完成</h2><p>正確題數：${s}/${qs.length}</p><p>所需時間：${t} 秒</p><a href='index.html'>返回首頁</a>`;}
+if(qs.length>0)render();else g.innerHTML='<p>請先在 questions.js 加入題目</p>';
+</script>
+</body>
+</html>
