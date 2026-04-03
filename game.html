@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>看圖估歌</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#4a6fa5;--primary-dark:#395d89;--bg:linear-gradient(135deg,#f8f9fa,#e3f2fd)}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);margin:0}
+header{background:linear-gradient(to right,#4a6fa5,#6e9cd2);color:#fff;text-align:center;padding:20px}
+header h1{margin:0;font-size:1.6rem}
+.container{max-width:480px;margin:20px auto;padding:20px}
+.card{background:#fff;border-radius:18px;padding:20px;box-shadow:0 10px 28px rgba(0,0,0,.12);text-align:center}
+.progress{font-size:.9rem;color:#666;margin-bottom:12px}
+img{width:100%;border-radius:14px;margin-bottom:14px}
+button{width:100%;padding:16px;margin:10px 0;font-size:1.05rem;border:none;border-radius:12px;background:var(--primary);color:#fff;cursor:pointer}
+button:hover{background:var(--primary-dark)}
+.correct{color:#198754;font-weight:600}
+.wrong{color:#dc3545;font-weight:600}
+.lyric{margin-top:12px;background:#f5f7fb;padding:14px;border-radius:12px;font-style:italic;white-space:pre-line}
+</style>
+</head>
+<body>
+<header><h1>🎵 看圖估歌</h1></header>
+<div class="container"><div id="game" class="card"></div></div>
+<script>
+const QUESTIONS={easy:[{image:"images/交叉算了.jpg",options:["馬路英雄","交叉算了","日出時讓戀愛終結"],answer:1,lyric:"踏上的士
+垂頭玩弄大鼻子"},{image:"images/她來聽我的演唱會.jpg",options:["在你身邊","留給自己一個晚上","她來聽我的演唱會"],answer:2,lyric:"她來聽我的演唱會
+在四十歲後聽歌的女人很美
+小孩在問她為什麼流淚
+身邊的男人早已漸漸入睡
+她靜靜聽著我們的演唱會"},{image:"images/有個人.jpg",options:["愛是永恆","有個人","真情流露"],answer:1,lyric:"同行共領會人世道理
+假使一天不再飛
+到公園中散步年紀
+有老伴仍是你"},{image:"images/有病呻吟.jpg",options:["有病呻吟","樓上來的聲音","等你等到我心痛"],answer:0,lyric:"如果失戀註定逃不過
+逃到病床前 才明白更多
+和你分手都也捱得過
+然而這夜為何
+無能力退燒 多麼錯"},{image:"images/吻別.png",options:["心碎了無痕","明日約定","吻別"],answer:2,lyric:"我和你吻別 在無人的街
+讓風痴笑我不能拒絕
+我和你吻別 在狂亂的夜
+我的心 等著迎接傷悲"},{image:"images/壯志驕陽.png",options:["壯志驕陽","太陽星辰","每天愛你多一些"],answer:0,lyric:"飛機將降落了 全沒法掩飾的笑
+我手中你贈的錶 提我愛惜一分一秒"},{image:"images/我等到花兒也謝了.png",options:["我等到花兒也謝了","秋意濃","一千個傷心的理由"],answer:0,lyric:"你知不知道 你知不知道
+我等到花兒也謝了"},{image:"images/李香蘭.jpg",options:["怎麼捨得你","李香蘭","忘情冷雨夜"],answer:1,lyric:"說不出 借酒相送
+夜雨凍 雨點透射到照片中
+回頭似是夢 無法彈動
+迷住凝望你 褪色照片中"},{image:"images/沒有童話時.jpg",options:["Life Is Like A Dream","讓奇妙飛翔","沒有童話時"],answer:2,lyric:"從前信 天空月亮
+裝起嫦娥 飛天巫婆 穿梭銀河
+從前信 仙境夢地
+仙子騰雲 小子屠龍 魔杖神奇"},{image:"images/馬路英雄.png",options:["這一次意外","燥狂","馬路英雄"],answer:2,lyric:"世界似後退 道別流浪身軀
+世界被我撞碎 道別遺憾一堆"},{image:"images/望月.png",options:["望月","餓狼傳說","愛狼說"],answer:0,lyric:"狼在叫 雪正飄 月似鏡子天上照"},{image:"images/樓上來的聲音.jpg",options:["有病呻吟","寂寞的男人","樓上來的聲音"],answer:2,lyric:"靜處在家中竟有壓力
+就似擔心失去價值
+寧願日日夜夜大聲播 情歌
+真不真實也好過"},{image:"images/頭髮亂了.jpg",options:["和好不如初","頭髮亂了","生命的插曲"],answer:1,lyric:"請揭曉 你做錯事了 讓你秀髮亂了
+應對亂了 太過份了 衫鈕都扣錯了"},{image:"images/藍雨.png",options:["藍雨","別戀","春風秋雨"],answer:0,lyric:"灰灰的天 空空的街 千串細雨點
+用斜紋交織出一張冰冷面
+微涼的風中 街中一把遭棄置的破傘
+像說怎麼過這一天"},{image:"images/Double Trouble.jpg",options:["這一次意外","Double Trouble","勇敢的故事"],answer:1,lyric:"想歸家去洗血跡 搖搖撞撞腳下無力
+捱到了正打開家門 暗暗看到背後
+那個殺手正回來明明是滅口"}],hard:[{image:"images/分手總要在雨天.jpeg",options:["分手總要在雨天","還是覺得你最好","我哭了"],answer:0,lyric:"你說要走的一晚
+連綿夜雨 也似這天"},{image:"images/太陽星辰.jpg",options:["地球人","愛是永恆","太陽星辰"],answer:2,lyric:"人於高速都市閃身過 沒看見他人
+難得當中的妳關心我 夢與我追尋"},{image:"images/月半彎.png",options:["月半彎","夕陽醉了","暗戀你"],answer:0,lyric:"月半彎 倚於深宵 晚風輕飄
+一張俏臉泛著半點的醉意"},{image:"images/好久不見.jpg",options:["好久不見","明日約定","心如刀割"],answer:0,lyric:"我希望是一片雲朵 飄到你的天空
+安安靜靜的望著你是否快樂
+只能這樣了 不打擾 你平靜生活"},{image:"images/離人.png",options:["離人","枕邊月亮","流星下的願"],answer:0,lyric:"銀色小船搖搖晃晃彎彎
+有人說 一次告別天上就會有顆星又熄滅"}]};
+const params=new URLSearchParams(location.search);const difficulty=params.get('difficulty')||'easy';const pool=QUESTIONS[difficulty];const shuffled=[...pool].sort(()=>Math.random()-0.5);const questions=shuffled.slice(0,Math.min(10,shuffled.length));let index=0,score=0;const startTime=Date.now();const game=document.getElementById('game');function render(){const q=questions[index];game.innerHTML=`<div class='progress'>題目 ${index+1} / ${questions.length}</div><img src="${q.image}">`+q.options.map((o,i)=>`<button onclick='answer(${i})'>${o}</button>`).join('');}function answer(c){const q=questions[index];const correct=c===q.answer;if(correct)score++;game.innerHTML=`<div class='${correct?'correct':'wrong'}'>${correct?'✅ 答對了':'❌ 答錯了'}</div><p>正確答案：${q.options[q.answer]}</p><div class='lyric'>${q.lyric}</div><button onclick='next()'>下一題</button>`;}function next(){index++;if(index<questions.length){render();}else{const t=Math.floor((Date.now()-startTime)/1000);game.innerHTML=`<h2>🎉 遊戲完成</h2><p>✅ 正確題數：${score} / ${questions.length}</p><p>⏱️ 所需時間：${t} 秒</p><a href='index.html'>返回首頁</a>`;}}render();
+</script>
+</body>
+</html>
