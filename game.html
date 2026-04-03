@@ -5,10 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>看圖估歌</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet">
-
-<style>
-:root {
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swapoot {
   --primary:#4a6fa5;
   --primary-dark:#395d89;
   --bg:linear-gradient(135deg,#f8f9fa,#e3f2fd);
@@ -131,17 +128,18 @@ const game = document.getElementById("game");
 function renderQuestion() {
   const q = questions[index];
   game.innerHTML = `
-    <div class="progress">題目 ${index+1} / ${questions.length}</div>
-    <img src="${qon onclick="answer(${i})">${o}</button>`).join("")}
+    <div class="progress">題目 ${index + 1} / ${questions.length}</div>
+    ${q.image}
+    ${q.options.map((opt,i)=>`<button onclick="answer(${i})">${opt}</button>`).join("")}
   `;
 }
 
-function answer(choice){
+function answer(choice) {
   const q = questions[index];
-  if(choice===q.answer) score++;
-  game.innerHTML=`
-    <div class="${choice===q.answer?'correct':'wrong'}">
-      ${choice===q.answer?'✅ 答對了！':'❌ 答錯了'}
+  if (choice === q.answer) score++;
+  game.innerHTML = `
+    <div class="${choice === q.answer ? 'correct' : 'wrong'}">
+      ${choice === q.answer ? '✅ 答對了！' : '❌ 答錯了'}
     </div>
     <p>正確答案：${q.options[q.answer]}</p>
     <div class="lyric">${q.lyric}</div>
@@ -149,18 +147,17 @@ function answer(choice){
   `;
 }
 
-function next(){
+function next() {
   index++;
-  if(index<questions.length){
+  if (index < questions.length) {
     renderQuestion();
-  }else{
-    const t=Math.floor((Date.now()-startTime)/1000);
-    game.innerHTML=`
+  } else {
+    const time = Math.floor((Date.now() - startTime) / 1000);
+    game.innerHTML = `
       <h2>🎉 遊戲完成</h2>
       <p>✅ 正確題數：${score} / ${questions.length}</p>
-      <p>⏱️ 所需時間：${t} 秒</p>
-      <ndex.html返回首頁</a>
-    `;
+      <p>⏱️ 所需時間：${time} 秒</p>
+      <a href="index.html    `;
   }
 }
 
