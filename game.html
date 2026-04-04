@@ -26,9 +26,21 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center;
         }
         #song-image {
-            width: 100%; height: auto; border-radius: 12px;
-            margin-bottom: 20px; object-fit: cover;
-            max-height: 300px; border: 1px solid #eee;
+    width: 100%;
+    /* 1. 設定一個固定高度，讓所有題目看起來整齊 */
+    height: 300px; 
+    
+    /* 2. 這是核心：cover 代表圖片會填滿區域並自動裁切多餘部分，不會變形 */
+    /* 如果你希望看到「完整整張圖片」，可以把 cover 改成 contain */
+    object-fit: contain; 
+    
+    /* 3. 加入背景色，這樣如果圖片太瘦，左右兩邊就不會空空的很奇怪 */
+    background-color: #f0f0f0; 
+    
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #eee;
+    display: block;
         }
         .options { display: grid; gap: 12px; }
         .option {
