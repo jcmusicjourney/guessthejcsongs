@@ -1,170 +1,202 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>看圖估歌</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet">
-
-<style>
-:root{
-  --primary:#4a6fa5;
-  --primary-dark:#395d89;
-  --bg:linear-gradient(135deg,#f8f9fa,#e3f2fd);
-}
-body{
-  font-family:'Noto Sans TC',sans-serif;
-  background:var(--bg);
-  margin:0;
-}
-header{
-  background:linear-gradient(to right,#4a6fa5,#6e9cd2);
-  color:#fff;
-  text-align:center;
-  padding:20px;
-}
-.container{
-  max-width:480px;
-  margin:20px auto;
-  padding:20px;
-}
-.card{
-  background:#fff;
-  border-radius:18px;
-  padding:20px;
-  box-shadow:0 10px 28px rgba(0,0,0,.12);
-  text-align:center;
-}
-.progress{
-  font-size:.9rem;
-  color:#666;
-  margin-bottom:12px;
-}
-img{
-  width:100%;
-  border-radius:14px;
-  margin-bottom:14px;
-}
-button{
-  width:100%;
-  padding:16px;
-  margin:10px 0;
-  font-size:1.05rem;
-  border:none;
-  border-radius:12px;
-  background:var(--primary);
-  color:#fff;
-  cursor:pointer;
-}
-button:hover{background:var(--primary-dark);}
-.correct{color:#198754;font-weight:600;}
-.wrong{color:#dc3545;font-weight:600;}
-.lyric{
-  margin-top:12px;
-  background:#f5f7fb;
-  padding:14px;
-  border-radius:12px;
-  font-style:italic;
-  white-space:pre-line;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正在遊戲中 - 看圖估歌</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* 樣式部分：美化遊戲介面 */
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: #f4f7f9; margin: 0; min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .container { width: 95%; max-width: 600px; margin: 20px auto; }
+        .progress-bar {
+            width: 100%; height: 8px; background: #e2e8f0;
+            border-radius: 4px; margin-bottom: 20px; overflow: hidden;
+        }
+        #progress-fill {
+            height: 100%; width: 0%; background: #4a6fa5;
+            transition: width 0.3s ease;
+        }
+        .game-card {
+            background: #fff; border-radius: 20px; padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center;
+        }
+        #song-image {
+            width: 100%; height: auto; border-radius: 12px;
+            margin-bottom: 20px; object-fit: cover;
+            max-height: 300px; border: 1px solid #eee;
+        }
+        .options { display: grid; gap: 12px; }
+        .option {
+            padding: 16px; border: 2px solid #edf2f7; border-radius: 12px;
+            cursor: pointer; transition: 0.2s; font-size: 1.1rem; font-weight: 600;
+        }
+        .option:hover { background: #f7fafc; border-color: #cbd5e0; }
+        
+        #feedback-area { margin-top: 20px; padding: 20px; border-radius: 12px; display: none; }
+        .correct-box { background: #f0fff4; border: 1px solid #c6f6d5; color: #2f855a; }
+        .wrong-box { background: #fff5f5; border: 1px solid #feb2b2; color: #c53030; }
+        .lyrics { margin: 15px 0; font-style: italic; color: #4a5568; line-height: 1.6; white-space: pre-line; }
+        
+        .btn-next {
+            background: #4a6fa5; color: white; border: none; padding: 12px 30px;
+            border-radius: 8px; cursor: pointer; font-size: 1rem; margin-top: 10px;
+        }
+        .hidden { display: none !important; }
+        .result-title { font-size: 2rem; color: #2d3748; margin-bottom: 10px; }
+        .score-text { font-size: 1.5rem; color: #4a6fa5; font-weight: 700; }
+    </style>
 </head>
-
 <body>
+    <div class="container">
+        <div id="game-ui">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 5px; color: #718096; font-size: 0.9rem;">
+                <span id="current-info">載入中...</span>
+                <span id="timer-info">時間: 0s</span>
+            </div>
+            <div class="progress-bar"><div id="progress-fill"></div></div>
+            
+            <div class="game-card">
+                <img id="song-image" src="" alt="題目圖片">
+                <div class="options" id="options-grid"></div>
+                
+                <div id="feedback-area">
+                    <div id="result-status" style="font-weight: bold; font-size: 1.2rem;"></div>
+                    <div class="lyrics" id="lyrics-text"></div>
+                    <button class="btn-next" onclick="handleNext()">下一題</button>
+                </div>
+            </div>
+        </div>
 
-<header>
-  <h1>🎵 看圖估歌</h1>
-</header>
-
-<div class="container">
-  <div id="game" class="card"></div>
-</div>
-
-<script>
-/* ===== 題庫（完整版） ===== */
-
-const QUESTIONS = {
-easy:[
-{image:"images/交叉算了.jpg",options:["馬路英雄","交叉算了","日出時讓戀愛終結"],answer:1,lyric:"踏上的士\n垂頭玩弄大鼻子"},
-{image:"images/她來聽我的演唱會.jpg",options:["在你身邊","留給自己一個晚上","她來聽我的演唱會"],answer:2,lyric:"她來聽我的演唱會\n身邊的男人早已漸漸入睡\n她靜靜聽著我們的演唱會"},
-{image:"images/有個人.jpg",options:["愛是永恆","有個人","真情流露"],answer:1,lyric:"同行共領會人世道理\n有老伴仍是你"},
-{image:"images/有病呻吟.jpg",options:["有病呻吟","樓上來的聲音","等你等到我心痛"],answer:0,lyric:"如果失戀註定逃不過"},
-{image:"images/吻別.png",options:["心碎了無痕","明日約定","吻別"],answer:2,lyric:"我和你吻別 在無人的街"},
-{image:"images/壯志驕陽.png",options:["壯志驕陽","太陽星辰","每天愛你多一些"],answer:0,lyric:"飛機將降落了"},
-{image:"images/我等到花兒也謝了.png",options:["我等到花兒也謝了","秋意濃","一千個傷心的理由"],answer:0,lyric:"我等到花兒也謝了"},
-{image:"images/李香蘭.jpg",options:["怎麼捨得你","李香蘭","忘情冷雨夜"],answer:1,lyric:"夜雨凍 雨點透射到照片中"},
-{image:"images/沒有童話時.jpg",options:["Life Is Like A Dream","讓奇妙飛翔","沒有童話時"],answer:2,lyric:"從前信 天空月亮"},
-{image:"images/馬路英雄.png",options:["這一次意外","燥狂","馬路英雄"],answer:2,lyric:"世界似後退"},
-{image:"images/望月.png",options:["望月","餓狼傳說","愛狼說"],answer:0,lyric:"狼在叫 雪正飄"},
-{image:"images/樓上來的聲音.jpg",options:["有病呻吟","寂寞的男人","樓上來的聲音"],answer:2,lyric:"靜處在家中竟有壓力"},
-{image:"images/頭髮亂了.jpg",options:["和好不如初","頭髮亂了","生命的插曲"],answer:1,lyric:"你秀髮亂了"},
-{image:"images/藍雨.png",options:["藍雨","別戀","春風秋雨"],answer:0,lyric:"灰灰的天 空空的街"},
-{image:"images/Double Trouble.jpg",options:["這一次意外","Double Trouble","勇敢的故事"],answer:1,lyric:"那個殺手正回來"}
-],
-hard:[
-{image:"images/分手總要在雨天.jpeg",options:["分手總要在雨天","還是覺得你最好","我哭了"],answer:0,lyric:"連綿夜雨 也似這天"},
-{image:"images/太陽星辰.jpg",options:["地球人","愛是永恆","太陽星辰"],answer:2,lyric:"難得當中的妳關心我"},
-{image:"images/月半彎.png",options:["月半彎","夕陽醉了","暗戀你"],answer:0,lyric:"月半彎 倚於深宵"},
-{image:"images/地球人.png",options:["留住這時光","Life Is Like A Dream","地球人"],answer:2,lyric:"我願穿梭千里路軌"},
-{image:"images/好久不見.jpg",options:["好久不見","明日約定","心如刀割"],answer:0,lyric:"只能這樣了 不打擾"},
-{image:"images/我應該.jpg",options:["我應該","和好不如初","我哭了"],answer:0,lyric:"常痛哭躲在門外"},
-{image:"images/和好不如初.jpg",options:["屈到病","和好不如初","玩不起"],answer:1,lyric:"即使修理以後瘡疤太多"},
-{image:"images/野貓之戀.jpeg",options:["屈到病","這麼近（那麼遠）","野貓之戀"],answer:2,lyric:"美麗偏偏不羈"},
-{image:"images/想劈酒.png",options:["想劈酒","釋放自己","似醉還未醉"],answer:0,lyric:"今朝有酒 今朝飲夠"},
-{image:"images/離人.png",options:["離人","枕邊月亮","流星下的願"],answer:0,lyric:"一次告別 天上又熄滅一顆星"}
-]
-};
-
-/* ===== 遊戲流程 ===== */
-
-const params = new URLSearchParams(location.search);
-const difficulty = params.get("difficulty") || "easy";
-const questions = QUESTIONS[difficulty];
-
-let index = 0;
-let score = 0;
-const startTime = Date.now();
-const game = document.getElementById("game");
-
-function render(){
-  const q = questions[index];
-  game.innerHTML = `
-    <div class="progress">題目 ${index+1} / ${questions.length}</div>
-    <img src<button onclick="answer(${i})">${o}</button>`).join("")}
-  `;
-}
-
-function answer(i){
-  const q = questions[index];
-  if(i===q.answer) score++;
-  game.innerHTML = `
-    <div class="${i===q.answer?'correct':'wrong'}">
-      ${i===q.answer?'✅ 正確':'❌ 錯誤'}
+        <div id="result-ui" class="hidden" style="text-align: center; margin-top: 50px;">
+            <div class="game-card">
+                <div class="result-title">🎉 挑戰完成</div>
+                <p class="score-text">得分: <span id="final-score"></span></p>
+                <p>總用時: <span id="final-time"></span> 秒</p>
+                <button class="btn-next" onclick="location.href='index.html'">回首頁</button>
+            </div>
+        </div>
     </div>
-    <p>正確答案：${q.options[q.answer]}</p>
-    <div class="lyric">${q.lyric}</div>
-    <button onclick="next()">下一題</button>
-  `;
-}
 
-function next(){
-  index++;
-  if(index<questions.length){
-    render();
-  }else{
-    const t=Math.floor((Date.now()-startTime)/1000);
-    game.innerHTML=`
-      <h2>🎉 完成</h2>
-      <p>得分：${score}/${questions.length}</p>
-      <p>時間：${t} 秒</p>
-      <button onclick="location.reload()">再玩一次</button>
-    `;
-  }
-}
+    <script>
+        /* 邏輯與題庫部分 */
+        const songData = {
+            easy: [
+                { img: "交叉算了.jpg", options: ["馬路英雄", "交叉算了", "日出時讓戀愛終結"], answer: "交叉算了", lyrics: "踏上的士\n垂頭玩弄大鼻子" },
+                { img: "她來聽我的演唱會.jpg", options: ["她來聽我的演唱會", "在你身邊", "留給自己一個晚上"], answer: "她來聽我的演唱會", lyrics: "她靜靜聽著我們的演唱會\n在四十歲後聽歌的女人很美" },
+                { img: "有個人.jpg", options: ["愛是永恆", "有個人", "真情流露"], answer: "有個人", lyrics: "同行共領會人世道理\n有老伴仍是你" },
+                { img: "有病呻吟.jpg", options: ["有病呻吟", "樓上來的聲音", "等你等到我心痛"], answer: "有病呻吟", lyrics: "和你分手都也捱得過\n然而這夜為何 無能力退燒 多麼錯" },
+                { img: "吻別.png", options: ["心碎了無痕", "明日約定", "吻別"], answer: "吻別", lyrics: "我和你吻別 在無人的街\n讓風痴笑我不能拒絕" },
+                { img: "壯志驕陽.png", options: ["壯志驕陽", "太陽星辰", "每天愛你多一些"], answer: "壯志驕陽", lyrics: "飛機將降落了 全沒法掩飾的笑\n提我愛惜一分一秒" },
+                { img: "我等到花兒也謝了.png", options: ["我等到花兒也謝了", "秋意濃", "一千個傷心的理由"], answer: "我等到花兒也謝了", lyrics: "你知不知道 你知不知道\n我等到花兒也謝了" },
+                { img: "李香蘭.jpg", options: ["怎麼捨得你", "李香蘭", "忘情冷雨夜"], answer: "李香蘭", lyrics: "回頭似是夢 無法彈動\n迷住凝望你 褪色照片中" },
+                { img: "沒有童話時.jpg", options: ["Life Is Like A Dream", "讓奇妙飛翔", "沒有童話時"], answer: "沒有童話時", lyrics: "從前信 天空月亮\n裝起嫦娥 飛天巫婆 穿梭銀河" },
+                { img: "馬路英雄.png", options: ["這一次意外", "燥狂", "馬路英雄"], answer: "馬路英雄", lyrics: "世界似後退 道別流浪身軀\n世界被我撞碎 道別遺憾一堆" },
+                { img: "望月.png", options: ["望月", "餓狼傳說", "愛狼說"], answer: "望月", lyrics: "狼在叫 雪正飄 月似鏡子天上照" },
+                { img: "樓上來的聲音.jpg", options: ["有病呻吟", "寂寞的男人", "樓上來的聲音"], answer: "樓上來的聲音", lyrics: "靜處在家中竟有壓力\n就似擔心失去價值" },
+                { img: "頭髮亂了.jpg", options: ["和好不如初", "頭髮亂了", "生命的插曲"], answer: "頭髮亂了", lyrics: "怎麼妳 頭髮亂了\n太過份了 衫鈕都扣錯了" },
+                { img: "藍雨.png", options: ["藍雨", "別戀", "春風秋雨"], answer: "藍雨", lyrics: "灰灰的天 空空的街 千串細雨點\n用斜紋交織出一張冰冷面" },
+                { img: "Double Trouble.jpg", options: ["這一次意外", "Double Trouble", "勇敢的故事"], answer: "Double Trouble", lyrics: "那個殺手正回來明明是滅口\nIt's Double Trouble everywhere" }
+            ],
+            hard: [
+                { img: "分手總要在雨天.jpeg", options: ["分手總要在雨天", "還是覺得你最好", "我哭了"], answer: "分手總要在雨天", lyrics: "總要在雨天 逃避某段從前\n但隔著細雨茫茫 看前方 難辨認你面" },
+                { img: "太陽星辰.jpg", options: ["地球人", "愛是永恆", "太陽星辰"], answer: "太陽星辰", lyrics: "人於高速都市閃身過 沒看見他人\n難得當中的妳關心我 夢與我追尋" },
+                { img: "月半彎.png", options: ["月半彎", "夕陽醉了", "暗戀你"], answer: "月半彎", lyrics: "月半彎 倚於深宵 晚風輕飄\n一張俏臉泛著半點的醉意" },
+                { img: "地球人.png", options: ["留住這時光", "Life Is Like A Dream", "地球人"], answer: "地球人", lyrics: "這是東京紐約巴黎 我願穿梭千里路軌\n滿面帶著熱情回歸" },
+                { img: "好久不見.jpg", options: ["好久不見", "明日約定", "心如刀割"], answer: "好久不見", lyrics: "我希望是一片雲朵 飄到你的天空\n安安靜靜的望著你是否快樂" },
+                { img: "我應該.jpg", options: ["我應該", "和好不如初", "我哭了"], answer: "我應該", lyrics: "常痛哭躲在門外 誰人共你正在內\n傳來聲聲喝采" },
+                { img: "和好不如初.jpg", options: ["屈到病", "和好不如初", "玩不起"], answer: "和好不如初", lyrics: "和好 不再如初\n即使修理以後瘡疤太多" },
+                { img: "野貓之戀.jpeg", options: ["屈到病", "這麼近（那麼遠）", "野貓之戀"], answer: "野貓之戀", lyrics: "夜深中嬉戲 野貓一生 美麗偏偏不羈" },
+                { img: "想劈酒.png", options: ["想劈酒", "釋放自己", "似醉還未醉"], answer: "想劈酒", lyrics: "今朝有酒 今朝飲飽飲夠\n開心懶管 誰無厘頭" },
+                { img: "離人.png", options: ["離人", "枕邊月亮", "流星下的願"], answer: "離人", lyrics: "銀色小船搖搖晃晃彎彎\n有人說 一次告別天上就會有顆星又熄滅" }
+            ]
+        };
 
-render();
-</script>
+        let currentDifficulty = 'easy';
+        let questions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let timer = 0;
+        let timerInterval;
 
+        window.onload = () => {
+            const params = new URLSearchParams(window.location.search);
+            currentDifficulty = params.get('difficulty') || 'easy';
+            // 複製題庫並隨機排序
+            questions = [...songData[currentDifficulty]].sort(() => Math.random() - 0.5);
+            
+            startTimer();
+            renderQuestion();
+        };
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timer++;
+                document.getElementById('timer-info').innerText = `時間: ${timer}s`;
+            }, 1000);
+        }
+
+        function renderQuestion() {
+            const q = questions[currentIndex];
+            const progress = ((currentIndex + 1) / questions.length) * 100;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+            document.getElementById('current-info').innerText = `第 ${currentIndex + 1} / ${questions.length} 題`;
+            document.getElementById('song-image').src = q.img;
+            
+            const optionsGrid = document.getElementById('options-grid');
+            optionsGrid.innerHTML = '';
+            optionsGrid.classList.remove('hidden');
+            document.getElementById('feedback-area').style.display = 'none';
+
+            q.options.forEach(opt => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.innerText = opt;
+                div.onclick = () => checkAnswer(opt);
+                optionsGrid.appendChild(div);
+            });
+        }
+
+        function checkAnswer(selected) {
+            const q = questions[currentIndex];
+            const feedbackArea = document.getElementById('feedback-area');
+            const resultStatus = document.getElementById('result-status');
+            const lyricsText = document.getElementById('lyrics-text');
+            
+            document.getElementById('options-grid').classList.add('hidden');
+            feedbackArea.style.display = 'block';
+
+            if (selected === q.answer) {
+                score++;
+                resultStatus.innerText = "正確！✅";
+                feedbackArea.className = "correct-box";
+            } else {
+                resultStatus.innerText = `錯誤 😭 正確是: ${q.answer}`;
+                feedbackArea.className = "wrong-box";
+            }
+            lyricsText.innerText = q.lyrics;
+        }
+
+        function handleNext() {
+            currentIndex++;
+            if (currentIndex < questions.length) {
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            clearInterval(timerInterval);
+            document.getElementById('game-ui').classList.add('hidden');
+            document.getElementById('result-ui').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+            document.getElementById('final-time').innerText = timer;
+        }
+    </script>
 </body>
 </html>
