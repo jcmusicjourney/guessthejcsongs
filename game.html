@@ -42,12 +42,45 @@
     border: 1px solid #eee;
     display: block;
         }
-        .options { display: grid; gap: 12px; }
-        .option {
-            padding: 16px; border: 2px solid #edf2f7; border-radius: 12px;
-            cursor: pointer; transition: 0.2s; font-size: 1.1rem; font-weight: 600;
-        }
-        .option:hover { background: #f7fafc; border-color: #cbd5e0; }
+      .options { 
+    display: grid; 
+    gap: 12px; 
+}
+
+.option {
+    padding: 16px; 
+    border: 2px solid #edf2f7; 
+    border-radius: 12px;
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+    font-size: 1.1rem; 
+    font-weight: 600;
+    background-color: #ffffff;
+    
+    /* 核心修正：消除手機點擊時的預設深色陰影 */
+    -webkit-tap-highlight-color: transparent;
+    
+    /* 防止在手機長按時彈出選單（可選，增加遊戲感） */
+    -webkit-touch-callout: none;
+    user-select: none;
+}
+
+/* 電腦版滑鼠懸停效果 */
+@media (hover: hover) {
+    .option:hover { 
+        background: #f7fafc; 
+        border-color: #4a6fa5; 
+        transform: translateY(-2px);
+    }
+}
+
+/* 手機與電腦通用的「按下」回饋感 */
+.option:active {
+    background-color: #ebf4ff; /* 點擊瞬間變為淡藍色 */
+    border-color: #4a6fa5;
+    transform: scale(0.97);     /* 點擊時輕微縮小，更有按鈕的回饋感 */
+    transition: 0.1s;           /* 縮小反應要快一點 */
+}
         
         #feedback-area { margin-top: 20px; padding: 20px; border-radius: 12px; display: none; }
         .correct-box { background: #f0fff4; border: 1px solid #c6f6d5; color: #2f855a; }
